@@ -1,5 +1,6 @@
 <!-- <h1>{{title}} is running</h1> -->
-<button (click)="onClick()"> New Question</button>
+<button (click)="onRandomClick()"> Random Questions</button>
+<button (click)="onCategoryClick()"> Category Question</button>
 <div class="container">
 <!-- 
     <div class="row">
@@ -10,13 +11,15 @@
     </div> -->
 
 
-    <div class="row" *ngFor="let item of gameObj">
-        <div class="box cap"> {{item.category.title}}</div>
+    <div class="column" *ngFor="let col of columnObj">
+        <div class="box cap"> {{col[0].category.title}}</div> 
+        <div class="row" *ngFor="let item of col">
+        <!-- <div class="box cap"> {{item.category.title}}</div> -->
         <!-- {{item.showItem%4 == 2}} -->
-        <div *ngIf="item.showItem%4 == 1" class="box num" (click)="onItemClick(item)">${{item.value}}</div>
-        <div *ngIf="item.showItem%4 == 2" class="box txt"  (click)="onItemClick(item)">{{item.question}}</div>
-        <div *ngIf="item.showItem%4 == 3" class="box txt"  (click)="onItemClick(item)"> {{item.answer}}</div>
-        <div *ngIf="item.showItem%4 == 0" class="box black"  (click)="onItemClick(item)"> answered</div>
+        <div *ngIf="item.showItem%4 == 1" class="box num" (click)="onItemClick(item,col)">${{item.value}}</div>
+        <div *ngIf="item.showItem%4 == 2" class="box txt modal"  (click)="onItemClick(item,col)">{{item.question}}</div>
+        <div *ngIf="item.showItem%4 == 3" class="box txt"  (click)="onItemClick(item,col)"> {{item.answer}}</div>
+        <div *ngIf="item.showItem%4 == 0" class="box black"  (click)="onItemClick(item,col)"> answered</div>
         <!-- <div class="hidden box">ID: {{item.id}}</div> -->
     </div>
 

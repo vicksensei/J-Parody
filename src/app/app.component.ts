@@ -11,19 +11,43 @@ import { ITriviaQuestion } from './ngrx-classes/ITriviaQuestion';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
 export class AppComponent implements OnInit, OnDestroy{
   private _destroying$ = new Subject<void>();
 
   public gameObj:ITriviaQuestion[] =[];
+  public columnObj: any = [];
+  // public columnObj:
   constructor(
-    private store: Store<AppState>,
+    private store: Store<AppState>
   ){
     
   }
   title = 'Trivia Project';
   
   ngOnInit() { 
-    this.getSingleRandomQuestion();
+    // this.getSingleRandomQuestion();
+    this.getCategoryQuestions();
+    
+    this.store.select(triviaDataNGRX.selectCategory).pipe(
+      takeUntil(this._destroying$)
+    ).subscribe((returnValue)=> {
+      console.log("category>>",returnValue); 
+
+      returnValue.forEach(
+        (category) => {
+          this.store.dispatch(triviaDataNGRX.requestCategoryQuestions( {categoryIDProp:category.id}))
+        }
+      )
+
+    })
+    this.store.select(triviaDataNGRX.selectCategoryQuestions).pipe(
+      takeUntil(this._destroying$))
+      .subscribe((returnValue) => {
+      console.log("columns>>",returnValue );
+      this.columnObj = returnValue;
+            }      
+            )
   }
 
   
@@ -43,12 +67,24 @@ export class AppComponent implements OnInit, OnDestroy{
     })
   }
 
+  
+  getCategoryQuestions():void{
 
-  onClick(): void{
-this. getSingleRandomQuestion()
+    this.store.dispatch(triviaDataNGRX.requestCategories());
   }
-  onItemClick(item:ITriviaQuestion):void {
-    const question = this.gameObj.find((i) => i === item);
+
+
+  onRandomClick(): void{
+    this.getSingleRandomQuestion();
+  }
+
+  onCategoryClick(): void{
+    this.getCategoryQuestions();
+    }
+
+  onItemClick(item:ITriviaQuestion, col:any):void {
+    const column = this.columnObj.find((i:ITriviaQuestion[]) => i === col);
+    const question = column.find((i:ITriviaQuestion) => i === item);
     if(question!== undefined)
 {      question.showItem++;}
 
