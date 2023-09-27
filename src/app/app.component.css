@@ -1,9 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
 
-
+.loading{
+    font-size: 5vw !important;
+    font-family: 'Libre Baskerville', serif;
+}
+.loading::after{
+    font-size: 5vw;
+    animation: anim 2s infinite;
+    color: white;
+    text-shadow: 3px 3px 2px #000000;
+    content: " ";
+}
+@keyframes anim {
+    0% {content: "   ";}
+    25% {content: ".  ";}
+    50% {content: ".. ";}
+    75% {content: "...";}
+    100% {content: "   ";}
+}
 .container{
     display: flex;
 }
+
 .box{
     display: flex;
     background-color: midnightblue;
@@ -11,19 +29,19 @@
     padding: 1vw;
     justify-content: center;
     align-items: center;
-    /* text-transform: uppercase; */
-    /* font-family: Arial, Helvetica, sans-serif; */
     text-align: center;
-    width: 16vw;
-    height: 8vw;
+    width: 17.5vw;
+    height: 11.5vh;
 }
+
 .box:not(.cap){
     cursor: pointer;
 }
+
 .cap{    
     font-family: 'Libre Baskerville', serif !important;
     text-transform: uppercase;
-    font-size: 2vw;
+    font-size: 1.5vw;
     color: white;
 }
 .txt{    
@@ -73,18 +91,19 @@ flex-direction: column;
     top: 0px;
     left:0px;
     border: 5vw solid black;
-    width:  80vw;
-    height: 80vh;
+    width:  86vw;
+    height: 72vh;
     z-index: 2;
     overflow-y: auto;
     background-color: midnightblue;
 }
-.answer{
+/* .answer{
     visibility: hidden;
 }
+
 .question:hover ~ .answer{
     visibility:visible;
-}
+} */
 
 .black{
     color:black;

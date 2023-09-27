@@ -13,7 +13,9 @@ export class TriviaData{
     {   
         const maxOffset=28157;
         const rand = Math.floor(Math.random() * maxOffset);
-        return this.webClient.get(`${this._apiAddress}/categories?count=5&offset=${rand}`);
+        console.log("Random offset >>", rand);
+        console.log('rand >>', rand );
+        return this.webClient.get(`${this._apiAddress}/categories?count=20&offset=${rand}`);
     }
 
     getCluesForCategory$(category: number) {

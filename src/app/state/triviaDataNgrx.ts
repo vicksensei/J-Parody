@@ -48,15 +48,21 @@ export function TriviaDataReducer(state: TriviaDataState | undefined, action: Ac
 //create the state model
 export interface TriviaDataState {
     questions: ITriviaQuestion[]; // This is for Random questions only
-    categories:  ICategory[];   // for the five categories we will use in the game
-    columns: any[]; // The questions/answers for each of the five categories
+
+    categories:  ICategory[];   // for the categories we get from the state
+    columns: any[]; // The questions/answers for each of the categories that we pull, valid or not
+
+    validCategories:  ITriviaQuestion[];  //categories in the pool to be selected for the game
+    categoryCol: ITriviaQuestion[]; // for the five categories we will use in the game
 }
 
 //initialize the state
 export const initialState: TriviaDataState = {
     questions: [],
     categories: [],
-    columns: []
+    validCategories:[],
+    categoryCol: [],
+    columns: [],
 }
 
 
@@ -75,11 +81,72 @@ export const triviaDataReducer= createReducer<TriviaDataState>(
             } )
         ,
     on(receiveCategoryQuestions, 
-        (state, {questionProp}) : TriviaDataState => 
-        {
-            console.log("InitialState :>>", initialState)
+        (state, {questionProp}) : TriviaDataState =>  {
+            // console.log("InitialState :>>", initialState);
             const tempState:any = { ...state };
-            tempState.columns.push(questionProp.sort((a,b)=> a.value - b.value));
+            let sortedQuestions =questionProp.sort((a,b)=> a.value - b.value);
+            tempState.columns.push(sortedQuestions);
+
+            let isValid = true;
+            const qValues =[]
+            
+            for (let i = 0; i < questionProp.length; i++) {
+                const question = questionProp[i];
+                if(question.question.includes("seen here"))
+                { 
+                    isValid = false; 
+                    console.log(question.category.title+ " has visual questions, invalid");
+                    
+                    break;
+                }
+
+                if(question.value !== null && qValues.includes(question.value)=== false) {
+                    qValues.push(question.value)
+                }
+            }
+            sortedQuestions = [];
+
+            const roundValid = [true, true];
+            // let validForRound = 0;
+
+            for (let round = 1; round <=2; round++) {
+        
+             
+            for(let i = 1; i< 6;i++){
+                const qVal = i*100 *round
+                if(qValues.includes(qVal)=== false)
+                {
+                    console.log(questionProp[0].category.title + " is invalid: does not have question with a value of "+ qVal);
+                    // console.log(qValues.includes(qVal), qValues);
+                    
+                    roundValid[round-1] = false;
+                    break;
+                }else{    
+                const tempQuestionsArr = questionProp.filter((q) => q.value === qVal);
+                const randQuestion = tempQuestionsArr[ Math.floor( Math.random() * tempQuestionsArr.length)]
+                sortedQuestions.push(randQuestion)
+                }
+            }   
+            // if (roundValid[round-1]) validForRound += round;
+        }
+        if(isValid === true) isValid= roundValid[0] === true || roundValid[1] === true;
+            // for (let i = 0; i < qValues.length; i++) {
+            //     const val = qValues[i];                
+            // }
+
+            if(isValid) {
+                console.log(sortedQuestions[0].category.title +" is valid");
+                tempState.validCategories.push(sortedQuestions);
+     
+        if(tempState.columns.length >=20 && tempState.validCategories.length >=5){
+            let  random = tempState.validCategories.sort(() => .5 - Math.random()).slice(0,5) // gets 5 random valid categories
+            tempState.categoryCol = random;
+            console.log(`This should be last call, ${tempState.columns.length} `);
+            
+        }
+            }
+
+
             return (tempState);
         }   
         ) 
@@ -100,7 +167,8 @@ export const selectCategory = createSelector(
 
 export const selectCategoryQuestions = createSelector(
     selectGlobalState,
-    state => state.triviaData.columns
+    
+    state => state.triviaData.categoryCol
 );
 // ** Effects ******************************************************************
 
